@@ -1,0 +1,12 @@
+#!/bin/bash
+
+ALPINE_NODE_VERSION=0.10.48
+NODE_VERSION=v0.10.48
+METEOR_RELEASE=1.3.5.1
+NPM_VERSION=3.10.10
+ARCHITECTURE=linux-x64
+SRC_PATH=./wekan
+
+BASE_IMAGE_NAME=wefork/wekan-base
+BUILD_IMAGE_NAME=wefork/wekan-build
+FINAL_IMAGE_NAME=wefork/wekan-alpine
