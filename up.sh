@@ -13,7 +13,12 @@ sudo docker-compose down && \
 BASE=$(sudo docker image ls -q $BASE_IMAGE_NAME) && \
 if [ "$BASE" = "" ]; then
   echo "building $BASE_IMAGE_NAME... " && \
-  sudo docker build --tag $BASE_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/base/Dockerfile" .
+  sudo docker build --tag $BASE_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/base/Dockerfile" \
+  --build-arg NODE_VERSION=${NODE_VERSION} \
+  --build-arg METEOR_RELEASE=${METEOR_RELEASE} \
+  --build-arg NPM_VERSION=${NPM_VERSION} \
+  --build-arg ARCHITECTURE=${ARCHITECTURE} \
+  .
 else
   echo "Do you want to rebuild the $BASE_IMAGE_NAME image? (Enter y for yes)" && \
   read USER_INPUT_1 && \
