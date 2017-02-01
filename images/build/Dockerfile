@@ -1,7 +1,11 @@
-FROM wefork/wekan-base:latest
+FROM wekan/wekan-base:latest
 MAINTAINER wefork
 
-ARG SRC_PATH=./wekan
+# Declare arguments
+ARG SRC_PATH
+
+# Set environment variables (set defaults as required)
+ENV SRC_PATH ${SRC_PATH:-./wekan}
 
 # Copy the app to the image
 COPY ${SRC_PATH} /home/wekan/app

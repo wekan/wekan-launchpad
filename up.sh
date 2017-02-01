@@ -3,7 +3,7 @@
 set -e && \
 \
 # Copy the environment variables from defaults if not already exists
-if [ ! -d ./.env ]; then
+if [ ! -e ./.env ]; then
   cp env-defaults ./.env
 fi
 . ./.env && \
@@ -13,21 +13,31 @@ sudo docker-compose down && \
 BASE=$(sudo docker image ls -q $BASE_IMAGE_NAME) && \
 if [ "$BASE" = "" ]; then
   echo "building $BASE_IMAGE_NAME... " && \
-  sudo docker build --tag $BASE_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/base/Dockerfile" .
+  sudo docker build --tag $BASE_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/base/Dockerfile" \
+  --build-arg NODE_VERSION=${NODE_VERSION} \
+  --build-arg METEOR_RELEASE=${METEOR_RELEASE} \
+  --build-arg NPM_VERSION=${NPM_VERSION} \
+  --build-arg ARCHITECTURE=${ARCHITECTURE} \
+  .
 else
   echo "Do you want to rebuild the $BASE_IMAGE_NAME image? (Enter y for yes)" && \
   read USER_INPUT_1 && \
   if [ "$USER_INPUT_1" = "y" ]; then
     echo $BASE_IMAGE_NAME && \
     sudo docker rmi $BASE_IMAGE_NAME && \
-    sudo docker build --tag $BASE_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/base/Dockerfile" .
+    sudo docker build --tag $BASE_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/base/Dockerfile" \
+    --build-arg NODE_VERSION=${NODE_VERSION} \
+    --build-arg METEOR_RELEASE=${METEOR_RELEASE} \
+    --build-arg NPM_VERSION=${NPM_VERSION} \
+    --build-arg ARCHITECTURE=${ARCHITECTURE} \
+    .
   fi
 fi && \
 \
 BUILD=$(sudo docker image ls -q $BUILD_IMAGE_NAME) && \
 # If ./wekan folder does not exist and $SRC_PATH is empty, then cloning the wekan repo is required for build.
 if [ "$SRC_PATH" = "./wekan" ] && [ ! -d ./wekan ]; then
-  git clone https://github.com/wefork/wekan.git ./wekan && \
+  git clone https://github.com/wekan/wekan.git ./wekan && \
   cd ./wekan && git checkout devel && cd ../
 fi && \
 if [ -d $PWD/build ] ; then
@@ -35,13 +45,13 @@ if [ -d $PWD/build ] ; then
 fi && \
 if [ "$BUILD" = "" ]; then
   echo "building $BUILD_IMAGE_NAME... " && \
-  sudo docker build --tag $BUILD_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/build/Dockerfile" .
+  sudo docker build --tag $BUILD_IMAGE_NAME --build-arg SRC_PATH=${SRC_PATH} --no-cache --force-rm --file "$PWD/images/build/Dockerfile" .
 else
   echo "Do you want to rebuild the $BUILD_IMAGE_NAME image? (Enter y for yes)" && \
   read USER_INPUT_2 && \
   if [ "$USER_INPUT_2" = "y" ]; then
     sudo docker rmi $BUILD_IMAGE_NAME && \
-    sudo docker build --build-arg SRC_PATH=${SRC_PATH} --tag $BUILD_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/build/Dockerfile" .
+    sudo docker build --tag $BUILD_IMAGE_NAME --build-arg SRC_PATH=${SRC_PATH} --no-cache --force-rm --file "$PWD/images/build/Dockerfile" .
   fi
 fi && \
 echo "Copying the built app to the $PWD/build directory.. " && \
@@ -58,13 +68,13 @@ sed -i "s|0.10.48|$ALPINE_NODE_VERSION|" ./images/final/Dockerfile && \
 FINAL=$(sudo docker image ls -q $FINAL_IMAGE_NAME) && \
 if [ "$FINAL" = "" ]; then
   echo "building $FINAL_IMAGE_NAME... " && \
-  sudo docker build --tag $FINAL_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/final/Dockerfile" .
+  sudo docker build --tag $FINAL_IMAGE_NAME --build-arg NPM_VERSION=${NPM_VERSION} --no-cache --force-rm --file "$PWD/images/final/Dockerfile" .
 else
   echo "Do you want to rebuild the $FINAL_IMAGE_NAME image? (Enter y for yes)" && \
   read USER_INPUT_3 && \
   if [ "$USER_INPUT_3" = "y" ]; then
     sudo docker rmi $FINAL_IMAGE_NAME && \
-    sudo docker build --tag $FINAL_IMAGE_NAME --no-cache --force-rm --file "$PWD/images/final/Dockerfile" .
+    sudo docker build --tag $FINAL_IMAGE_NAME --build-arg NPM_VERSION=${NPM_VERSION} --no-cache --force-rm --file "$PWD/images/final/Dockerfile" .
   fi
 fi && \
 \
