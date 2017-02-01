@@ -1,4 +1,4 @@
-FROM wefork/wekan-base:latest
+FROM wekan/wekan-base:latest
 MAINTAINER wefork
 
 # Declare arguments
