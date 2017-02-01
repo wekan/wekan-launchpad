@@ -1,8 +1,12 @@
 FROM mhart/alpine-node:0.10.48
 MAINTAINER wefork
 
+# Declare arguments
+ARG NPM_VERSION
+
+# Set environment variables (set defaults as required)
 ENV BUILD_DEPS="make gcc g++ python"
-ARG NPM_VERSION=3.10.10
+ENV NPM_VERSION ${NPM_VERSION:-3.10.10}
 
 # Copy the app to the image
 COPY ./migration/build ./build

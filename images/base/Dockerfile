@@ -6,7 +6,6 @@ ARG NODE_VERSION
 ARG METEOR_RELEASE
 ARG NPM_VERSION
 ARG ARCHITECTURE
-ARG SRC_PATH
 
 # Set the environment variables (defaults where required)
 ENV BUILD_DEPS="wget curl bzip2 build-essential python git ca-certificates"
@@ -15,7 +14,6 @@ ENV NODE_VERSION ${NODE_VERSION:-v0.10.48}
 ENV METEOR_RELEASE ${METEOR_RELEASE:-1.3.5.1}
 ENV NPM_VERSION ${NPM_VERSION:-3.10.10}
 ENV ARCHITECTURE ${ARCHITECTURE:-linux-x64}
-ENV SRC_PATH ${SRC_PATH:-./}
 
 
 RUN \
