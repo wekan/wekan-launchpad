@@ -17,9 +17,9 @@ RUN \
     \
     # Build app
     gosu wekan /home/wekan/.meteor/meteor add standard-minifier-js && \
-    gosu wekan /home/wekan/.meteor/meteor npm install -g yarn && \
-    gosu wekan /home/wekan/.meteor/meteor yarn install && \
+    gosu wekan /home/wekan/.meteor/meteor npm install && \
     gosu wekan /home/wekan/.meteor/meteor build --directory /home/wekan/app_build && \
     cd /home/wekan/app_build/bundle/programs/server/ && \
-    gosu wekan yarn install --force && \
+    gosu wekan npm cache clean && \
+    gosu wekan npm install && \
     mv /home/wekan/app_build/bundle /build;
