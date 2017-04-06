@@ -15,7 +15,7 @@ a git clone of the latest commit of the wekan/wekan project.
 ### Usage
 
 ```
-sudo sh up.sh
+bash up.sh
 ```
 
 ***TODO***
