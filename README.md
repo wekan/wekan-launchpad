@@ -1,7 +1,6 @@
 ### Features
 
-- Makes a build which runs on top of [Michael Hart's](https://github.com/mhart)
-[alpine-node image](https://github.com/mhart/alpine-node).
+- Makes a build which runs on top of [Nodes's Alpine image](https://hub.docker.com/_/node/).
 - Relatively small size of final container.
 - Uses base image and intermediate image to reduce the build time as much of the build time is spent downloading meteor.
 - Optionally rebuild the base and/or build images to start a fresh build.
@@ -15,7 +14,7 @@ a git clone of the latest commit of the wekan/wekan project.
 ### Usage
 
 ```
-sudo sh up.sh
+bash up.sh
 ```
 
 ***TODO***

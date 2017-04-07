@@ -34,11 +34,34 @@ else
   fi
 fi && \
 \
+\
 BUILD=$(sudo docker image ls -q $BUILD_IMAGE_NAME) && \
-# If ./wekan folder does not exist and $SRC_PATH is empty, then cloning the wekan repo is required for build.
-if [ "$SRC_PATH" = "./wekan" ] && [ ! -d ./wekan ]; then
-  git clone https://github.com/wekan/wekan.git ./wekan && \
-  cd ./wekan && git checkout devel && cd ../
+# If $SRC_PATH folder does not exist then cloning the wekan repo is required for build.
+if [ ! -d $SRC_PATH ]; then
+  git clone $GIT_REPO ./wekan && \
+  cd ./wekan && \
+  if [ "$USE_RELEASE" == "true" ] || [ "$USE_RELEASE" == "TRUE" ]; then
+    git checkout $GIT_RELEASE
+  else
+    git checkout $GIT_BRANCH
+  fi && \
+  cd ../
+else
+  echo "Do you want to do a clean download of ${GIT_REPO} to ${SRC_PATH}? (Enter y for yes)" && \
+  read USER_INPUT && \
+  if [ "$USER_INPUT" == "y" ]; then
+    if [ -d ./wekan ]; then
+      sudo rm -R ./wekan;
+    fi && \
+    git clone $GIT_REPO ./wekan && \
+    cd ./wekan && \
+    if [ "$USE_RELEASE" == "true" ] || [ "$USE_RELEASE" == "TRUE" ]; then
+      git checkout $GIT_RELEASE
+    else
+      git checkout $GIT_BRANCH
+    fi && \
+    cd ../
+  fi
 fi && \
 if [ -d $PWD/build ] ; then
   sudo rm -R $PWD/build
@@ -58,12 +81,15 @@ echo "Copying the built app to the $PWD/build directory.. " && \
 \
 #sudo docker run --rm=true --name temp-container -v $PWD/migration:/migration $BUILD_IMAGE_NAME:latest tar --verbose --create --file=/migration/build-$(date +"%d-%m-%y").tar /build && \
 if [ -d $PWD/migration/ ] ; then
-  rm -R $PWD/migration/
+  sudo rm -R $PWD/migration/
 fi && \
 sudo docker run --rm=true --name temp-container -v $PWD/migration:/migration $BUILD_IMAGE_NAME:latest cp --recursive --preserve /build /migration && \
 \
-echo "substituting the ALPINE_NODE_VERSION varaible... " && \
-sed -i "s|0.10.48|$ALPINE_NODE_VERSION|" ./images/final/Dockerfile && \
+NODE_DOCKER_IMAGE=`cat ./images/final/Dockerfile` && \
+if [[ $ALPINE_NODE_VERSION != *"$NODE_DOCKER_IMAGE"* ]]; then
+  echo "substituting the ALPINE_NODE_VERSION varaible... " && \
+  sed -i "s|alpine-version|$ALPINE_NODE_VERSION|" ./images/final/Dockerfile;
+fi && \
 \
 FINAL=$(sudo docker image ls -q $FINAL_IMAGE_NAME) && \
 if [ "$FINAL" = "" ]; then
@@ -79,7 +105,7 @@ else
 fi && \
 \
 echo "substituting the ALPINE_NODE_VERSION variable back to original... " && \
-sed -i "s|$ALPINE_NODE_VERSION|0.10.48|" ./images/final/Dockerfile && \
+sed -i "s|$ALPINE_NODE_VERSION|alpine-version|" ./images/final/Dockerfile && \
 \
 sudo docker-compose up -d && \
 \
