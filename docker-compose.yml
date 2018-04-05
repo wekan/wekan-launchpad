@@ -16,7 +16,7 @@ services:
       - wekan-db-dump:/dump
 
   wekan:
-    image: wekan/wekan-alpine:latest
+    image: quay.io/wekan/wekan
     container_name: wekan-app
     restart: always
     networks:
